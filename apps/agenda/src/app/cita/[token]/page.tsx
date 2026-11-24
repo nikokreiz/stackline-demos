@@ -9,6 +9,7 @@ import { appointments, customers, organizations, professionals, services } from 
 import { getBaseUrl } from "@/lib/base-url";
 import { DEPOSIT_LABEL, STATUS_LABEL, STATUS_TONE } from "@/lib/labels";
 import { fetchMercadoPagoPayment, markDepositPaid, paymentsMode } from "@/lib/payments";
+import { brandStyle } from "@/lib/brand";
 import { canChange } from "@/lib/policy";
 import { BOOKING_WINDOW_DAYS } from "@/lib/slots";
 import { cancelAction, confirmAttendanceAction, payDepositAction } from "./actions";
@@ -57,7 +58,7 @@ export default async function CitaPage({
   const isNew = sp.nueva === "1" || sp.pago === "ok";
 
   return (
-    <div className="min-h-dvh bg-canvas px-4 py-10">
+    <div className="min-h-dvh bg-canvas px-4 py-10" style={brandStyle(org.settings.brandColor)}>
       <div className="mx-auto max-w-md">
         {isNew && appt.status === "confirmed" && (
           <div className="mb-6 flex items-center gap-3 rounded-xl bg-emerald-50 p-4 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200">

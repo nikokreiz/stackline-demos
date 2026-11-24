@@ -19,9 +19,14 @@ export default function Home() {
         <span className="text-lg font-semibold">
           Reservo<span className="text-brand">.</span>
         </span>
-        <ButtonLink href="/login" variant="secondary" size="sm">
-          Entrar al panel
-        </ButtonLink>
+        <div className="flex gap-2">
+          <ButtonLink href="/login" variant="ghost" size="sm">
+            Entrar
+          </ButtonLink>
+          <ButtonLink href="/registro" size="sm">
+            Crear mi agenda
+          </ButtonLink>
+        </div>
       </header>
 
       <section className="mx-auto max-w-6xl px-4 pb-16 pt-10 sm:px-6 lg:pt-16">
@@ -35,11 +40,14 @@ export default function Home() {
             cualquier hora, y tú dejas de agendar por chat hasta la medianoche.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <ButtonLink href={`/reservar/${DEMO_SLUG}`} size="lg">
+            <ButtonLink href="/registro" size="lg">
+              Crear mi agenda gratis
+            </ButtonLink>
+            <ButtonLink href={`/reservar/${DEMO_SLUG}`} size="lg" variant="secondary">
               Probar como cliente
             </ButtonLink>
-            <ButtonLink href="/login" size="lg" variant="secondary">
-              Ver el panel del dueño
+            <ButtonLink href="/login" size="lg" variant="ghost">
+              Ver el panel de ejemplo
             </ButtonLink>
           </div>
         </div>
@@ -58,13 +66,13 @@ export default function Home() {
 
         <Card className="mt-10 flex flex-col items-start justify-between gap-4 p-8 sm:flex-row sm:items-center">
           <div>
-            <h2 className="text-xl font-semibold">Lo adaptamos a tu negocio</h2>
+            <h2 className="text-xl font-semibold">14 días gratis, sin tarjeta</h2>
             <p className="mt-1 text-ink-soft">
-              Tu marca, tus servicios y tus reglas de abono. Código 100% tuyo, construido por Stackline en Chile.
+              Crea tu agenda con tu marca, tus servicios y tus reglas de abono. Hecho por Stackline en Chile.
             </p>
           </div>
-          <ButtonLink href="https://stacklines.vercel.app/#contacto" size="lg">
-            Cotizar con Stackline
+          <ButtonLink href="/registro" size="lg">
+            Empezar ahora
           </ButtonLink>
         </Card>
       </section>

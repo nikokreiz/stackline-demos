@@ -5,14 +5,19 @@ import { clp, fmtLongDay, fmtTime, pct } from "@stackline/core/format";
 import { Badge, ButtonLink, Card, CardHeader, EmptyState, PageHeader, Stat } from "@stackline/core/ui";
 import { addDaysStr, localToUtc, todayLocal } from "@stackline/core/time";
 import { appointments } from "@/db/schema";
+import { GettingStarted } from "@/components/getting-started";
+import { getBaseUrl } from "@/lib/base-url";
+import { getOrg } from "@/lib/org";
 import { STATUS_LABEL, STATUS_TONE } from "@/lib/labels";
 import { panel } from "@/lib/panel";
 import { appointmentsBetween } from "@/lib/queries";
 
 export const metadata = { title: "Hoy" };
 
-export default async function HoyPage() {
+export default async function HoyPage({ searchParams }: { searchParams: Promise<{ bienvenida?: string }> }) {
   const { db, orgId, tz, session } = await panel();
+  const org = await getOrg(db, orgId);
+  const welcome = (await searchParams).bienvenida === "1";
   const today = todayLocal(tz);
   const start = localToUtc(today, "00:00", tz);
   const tomorrow = localToUtc(addDaysStr(today, 1), "00:00", tz);
@@ -55,6 +60,10 @@ export default async function HoyPage() {
           </ButtonLink>
         }
       />
+
+      {!org.settings.onboardedAt && session.role !== "staff" && (
+        <GettingStarted db={db} org={org} baseUrl={await getBaseUrl()} welcome={welcome} />
+      )}
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <Stat label="Citas de hoy" value={active.length} hint={`${upcoming.length} por atender`} />

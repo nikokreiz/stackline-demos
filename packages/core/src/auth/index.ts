@@ -20,7 +20,7 @@ export type Session = {
   role: Role;
 };
 
-const hashToken = (token: string) => createHash("sha256").update(token).digest("hex");
+export const hashToken = (token: string) => createHash("sha256").update(token).digest("hex");
 
 /** Crea la sesión y deja la cookie. Llamar solo desde server actions o route handlers. */
 export async function startSession(db: Db, userId: string, orgId: string) {
@@ -89,6 +89,44 @@ export async function requireRole(db: Db, allowed: Role[], loginPath = "/login")
   const s = await requireSession(db, loginPath);
   if (!allowed.includes(s.role)) throw new Error("No tienes permiso para esta acción.");
   return s;
+}
+
+/** Negocios a los que pertenece un usuario, para cambiar entre ellos. */
+export async function listUserOrgs(db: Db, userId: string) {
+  return db
+    .select({ id: organizations.id, name: organizations.name, slug: organizations.slug, role: memberships.role })
+    .from(memberships)
+    .innerJoin(organizations, eq(organizations.id, memberships.orgId))
+    .where(eq(memberships.userId, userId))
+    .orderBy(organizations.name);
+}
+
+/** Cambia el negocio activo de la sesión actual, si el usuario pertenece a él. */
+export async function switchSessionOrg(db: Db, orgId: string) {
+  const s = await getSession(db);
+  if (!s) return false;
+  const [m] = await db
+    .select({ id: memberships.id })
+    .from(memberships)
+    .where(and(eq(memberships.userId, s.user.id), eq(memberships.orgId, orgId)));
+  if (!m) return false;
+  const token = (await cookies()).get(COOKIE)?.value;
+  if (!token) return false;
+  await db.update(sessions).set({ orgId }).where(eq(sessions.id, hashToken(token)));
+  return true;
+}
+
+/**
+ * Administradores de la plataforma (Stackline), por correo en SUPERADMIN_EMAILS.
+ * En desarrollo, sin la variable, el dueño de la demo también lo es.
+ */
+export function isSuperAdmin(email: string) {
+  const list = (process.env.SUPERADMIN_EMAILS ?? "")
+    .split(",")
+    .map((e) => e.trim().toLowerCase())
+    .filter(Boolean);
+  if (list.length === 0) return process.env.NODE_ENV !== "production" && email === "dueno@demo.cl";
+  return list.includes(email.toLowerCase());
 }
 
 export async function endSession(db: Db) {

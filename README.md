@@ -7,6 +7,27 @@ Proyectos de demostración de [Stackline](https://stacklines.vercel.app/) pensad
 | [`apps/agenda`](apps/agenda) · **Reservo** | Barberías, centros de estética, kine, consultas | Reserva online con abono, recordatorios por WhatsApp, gestión de la cita por el cliente, agenda por profesional y reportes de inasistencia |
 | [`apps/inventario`](apps/inventario) · **Margen** | Pymes que venden en local, Instagram y Mercado Libre | Stock por bodega, costo promedio ponderado, comisiones por canal, gastos y ganancia real del mes |
 
+## Cómo se ve
+
+> Guía para presentarlas a un cliente: [docs/guia-demo.md](docs/guia-demo.md)
+
+### Reservo (agenda online)
+
+| Reserva desde el celular | Gestión de la cita |
+|---|---|
+| <img src="docs/capturas/agenda-reserva-movil.png" width="300" alt="Reserva desde el celular"> | <img src="docs/capturas/agenda-cita-movil.png" width="300" alt="El cliente revisa, cambia o cancela su cita"> |
+
+![Página de inicio de Reservo](docs/capturas/agenda-landing.png)
+![Panel: citas de hoy](docs/capturas/agenda-panel-hoy.png)
+![Panel: agenda semanal por profesional](docs/capturas/agenda-panel-agenda.png)
+![Panel: reportes de ingresos e inasistencias](docs/capturas/agenda-panel-reportes.png)
+
+### Margen (inventario multicanal)
+
+![Resumen del mes con la ganancia real](docs/capturas/inventario-resumen.png)
+![Registrar una venta con comisión del canal](docs/capturas/inventario-nueva-venta.png)
+![Kardex de un producto con costo promedio](docs/capturas/inventario-kardex.png)
+
 ## Probar en local
 
 Requisitos: Node 20 o superior y pnpm 10.
@@ -20,6 +41,23 @@ pnpm dev:inventario   # http://localhost:3002
 No hace falta instalar Postgres: sin `DATABASE_URL`, cada app usa [PGlite](https://pglite.dev) (Postgres embebido) en `apps/<app>/.data/` y carga los datos de demostración la primera vez. Para empezar de cero, borra esa carpeta (`pnpm --filter agenda db:reset`).
 
 En la pantalla de login hay botones para entrar con un clic como dueño o como personal. Las cuentas de demostración usan `dueno@demo.cl` y la contraseña `demo1234` (definidas en `src/db/seed.ts` de cada app).
+
+## Reservo como SaaS (muchos negocios en una instalación)
+
+La agenda funciona como servicio para muchos locales a la vez:
+
+- **Registro** en `/registro`: el dueño crea su negocio, elige el rubro y parte con servicios de ejemplo, un horario base y 14 días de prueba gratis.
+- **Enlace propio** por negocio: `/reservar/<enlace>`, editable en *Ajustes* junto con la descripción, dirección, WhatsApp, color de marca y horas mínimas para cancelar.
+- **Guía de primeros pasos** en el panel hasta que el negocio queda configurado.
+- **Equipo**: el dueño invita usuarios por enlace (rol recepción o administrador). Una persona puede pertenecer a varios negocios y cambiar entre ellos en *Ajustes*.
+- **Aislamiento**: todas las consultas del panel filtran por el negocio de la sesión (`org_id`).
+- **Administración de Stackline** en `/admin` (solo correos de `SUPERADMIN_EMAILS`): lista de negocios, uso, plan, extender prueba y suspender.
+
+Pendiente para cobrar: conectar la suscripción mensual (por ejemplo, suscripciones de Mercado Pago), correos transaccionales (bienvenida, recuperar contraseña) y límites por plan.
+
+### Camino a Supabase
+
+Hoy la base puede ser cualquier Postgres, incluido el de Supabase (`DATABASE_URL`). El siguiente paso sería usar Supabase Auth para el login (recuperar contraseña, entrar con Google, confirmar correo) y políticas RLS por `org_id` como segunda capa de seguridad. El modelo de datos ya está preparado para eso: cada tabla de negocio tiene `org_id` y los permisos salen de `memberships`.
 
 ## Estructura
 
@@ -40,9 +78,9 @@ Cada app se despliega como un proyecto de Vercel aparte, con **Root Directory** 
 
 1. Crea una base Postgres (Supabase o Neon) por app y copia la URL de conexión.
 2. En Vercel, define las variables de entorno de `.env.example` de la app. Como mínimo `DATABASE_URL`, `CRON_SECRET` y, para la demo pública, `DEMO_MODE=true`.
-3. Las migraciones se aplican solas en el primer request. `vercel.json` programa los cron: recordatorios cada hora (agenda) y reinicio diario de los datos de demostración.
+3. Las migraciones se aplican solas en el primer request. `vercel.json` programa los cron de la agenda: recordatorios una vez al día (9:00 de Chile, cubre las citas de las 26 horas siguientes) y reinicio diario de los datos de demostración.
 
-> Los cron por hora requieren el plan Pro de Vercel. En el plan Hobby, cambia el de recordatorios a una vez al día: igual cubre las citas del día siguiente.
+> Se dejaron diarios porque el plan Hobby de Vercel no permite cron más frecuentes. Con el plan Pro se puede cambiar el de recordatorios a cada hora (`0 * * * *`) para avisar más cerca de la cita.
 
 ### Integraciones de la agenda
 

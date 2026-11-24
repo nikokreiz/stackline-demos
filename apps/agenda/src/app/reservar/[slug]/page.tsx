@@ -7,6 +7,7 @@ import { getDb } from "@/db";
 import { organizations, professionals, services } from "@/db/schema";
 import { BOOKING_WINDOW_DAYS } from "@/lib/slots";
 import { paymentsMode } from "@/lib/payments";
+import { brandStyle } from "@/lib/brand";
 import { BookingFlow } from "./booking-flow";
 
 export const dynamic = "force-dynamic";
@@ -22,7 +23,7 @@ export default async function ReservarPage({ params }: { params: Promise<{ slug:
   const { slug } = await params;
   const db = await getDb();
   const [org] = await db.select().from(organizations).where(eq(organizations.slug, slug));
-  if (!org) notFound();
+  if (!org || org.status !== "active") notFound();
 
   const [svc, pros] = await Promise.all([
     db
@@ -38,11 +39,12 @@ export default async function ReservarPage({ params }: { params: Promise<{ slug:
   ]);
 
   return (
-    <div className="min-h-dvh bg-canvas">
+    <div className="min-h-dvh bg-canvas" style={brandStyle(org.settings.brandColor)}>
       {paymentsMode() === "simulado" && <DemoBanner>Demo: el pago del abono es simulado y no se cobra nada.</DemoBanner>}
       <div className="mx-auto max-w-2xl px-4 py-8 sm:py-12">
         <header className="mb-8">
           <h1 className="text-2xl font-semibold tracking-tight">{org.name}</h1>
+          {org.settings.description && <p className="mt-1 text-ink-soft">{org.settings.description}</p>}
           {org.settings.address && (
             <p className="mt-1 flex items-center gap-1.5 text-sm text-ink-soft">
               <MapPin className="size-4" /> {org.settings.address}

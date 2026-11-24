@@ -1,12 +1,13 @@
-import { and, asc, eq, gt } from "drizzle-orm";
+import { and, asc, eq, gt, isNull } from "drizzle-orm";
 import { Trash2 } from "lucide-react";
 import { fmtDateTime } from "@stackline/core/format";
 import { Badge, Button, Card, CardHeader, Field, Input, PageHeader, Select } from "@stackline/core/ui";
 import { minutesToHHMM, todayLocal } from "@stackline/core/time";
-import { blocks, professionals, workingHours } from "@/db/schema";
+import { blocks, invitations, memberships, professionals, users, workingHours } from "@/db/schema";
 import { WEEKDAYS } from "@/lib/labels";
 import { canManage, panel } from "@/lib/panel";
-import { addBlockAction, addProfessionalAction, deleteBlockAction, saveHoursAction, toggleProfessionalAction } from "../actions";
+import { addBlockAction, addProfessionalAction, deleteBlockAction, removeMemberAction, revokeInvitationAction, saveHoursAction, toggleProfessionalAction } from "../actions";
+import { InviteForm } from "./invite-form";
 
 export const metadata = { title: "Equipo y horarios" };
 
@@ -15,7 +16,7 @@ const ORDER = [1, 2, 3, 4, 5, 6, 0];
 export default async function EquipoPage() {
   const { db, orgId, tz, session } = await panel();
   const editable = canManage(session.role);
-  const [pros, hours, blks] = await Promise.all([
+  const [pros, hours, blks, members, pending] = await Promise.all([
     db.select().from(professionals).where(eq(professionals.orgId, orgId)).orderBy(asc(professionals.name)),
     db.select().from(workingHours).where(eq(workingHours.orgId, orgId)).orderBy(asc(workingHours.startMin)),
     db
@@ -24,7 +25,18 @@ export default async function EquipoPage() {
       .innerJoin(professionals, eq(professionals.id, blocks.professionalId))
       .where(and(eq(blocks.orgId, orgId), gt(blocks.endsAt, new Date())))
       .orderBy(asc(blocks.startsAt)),
+    db
+      .select({ id: memberships.id, role: memberships.role, userId: users.id, name: users.name, email: users.email })
+      .from(memberships)
+      .innerJoin(users, eq(users.id, memberships.userId))
+      .where(eq(memberships.orgId, orgId))
+      .orderBy(asc(users.name)),
+    db
+      .select()
+      .from(invitations)
+      .where(and(eq(invitations.orgId, orgId), isNull(invitations.acceptedAt), gt(invitations.expiresAt, new Date()))),
   ]);
+  const ROLE = { owner: "Dueño", admin: "Administrador", staff: "Recepción" } as const;
 
   const dayText = (proId: string, wd: number) =>
     hours
@@ -166,6 +178,41 @@ export default async function EquipoPage() {
           </Card>
         )}
       </div>
+      <Card className="mt-6">
+        <CardHeader title="Usuarios con acceso al panel" subtitle="Quiénes pueden entrar a la agenda de este negocio." />
+        <ul className="divide-y divide-line">
+          {members.map((m) => (
+            <li key={m.id} className="flex items-center justify-between gap-3 px-5 py-3 text-sm">
+              <span className="min-w-0">
+                <span className="block font-medium">{m.name}</span>
+                <span className="block truncate text-xs text-ink-soft">{m.email}</span>
+              </span>
+              <span className="flex items-center gap-2">
+                <Badge tone={m.role === "owner" ? "brand" : "neutral"}>{ROLE[m.role]}</Badge>
+                {editable && m.userId !== session.user.id && (
+                  <form action={removeMemberAction.bind(null, m.id)}>
+                    <Button variant="ghost" size="sm">Quitar</Button>
+                  </form>
+                )}
+              </span>
+            </li>
+          ))}
+          {pending.map((i) => (
+            <li key={i.id} className="flex items-center justify-between gap-3 px-5 py-3 text-sm">
+              <span className="min-w-0">
+                <span className="block truncate text-ink-soft">{i.email}</span>
+                <span className="text-xs text-ink-faint">Invitación pendiente · vence {fmtDateTime(i.expiresAt, tz)}</span>
+              </span>
+              {editable && (
+                <form action={revokeInvitationAction.bind(null, i.id)}>
+                  <Button variant="ghost" size="sm">Revocar</Button>
+                </form>
+              )}
+            </li>
+          ))}
+        </ul>
+        {editable && <InviteForm />}
+      </Card>
     </>
   );
 }
