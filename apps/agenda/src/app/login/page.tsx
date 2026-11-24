@@ -32,6 +32,12 @@ export default function LoginPage() {
           </div>
           <LoginForm />
         </Card>
+        <p className="mt-4 text-center text-sm text-ink-soft">
+          ¿Tienes un negocio?{" "}
+          <Link href="/registro" className="font-medium text-brand">
+            Crea tu agenda gratis
+          </Link>
+        </p>
       </div>
     </div>
   );

@@ -21,6 +21,23 @@ No hace falta instalar Postgres: sin `DATABASE_URL`, cada app usa [PGlite](https
 
 En la pantalla de login hay botones para entrar con un clic como dueño o como personal. Las cuentas de demostración usan `dueno@demo.cl` y la contraseña `demo1234` (definidas en `src/db/seed.ts` de cada app).
 
+## Reservo como SaaS (muchos negocios en una instalación)
+
+La agenda funciona como servicio para muchos locales a la vez:
+
+- **Registro** en `/registro`: el dueño crea su negocio, elige el rubro y parte con servicios de ejemplo, un horario base y 14 días de prueba gratis.
+- **Enlace propio** por negocio: `/reservar/<enlace>`, editable en *Ajustes* junto con la descripción, dirección, WhatsApp, color de marca y horas mínimas para cancelar.
+- **Guía de primeros pasos** en el panel hasta que el negocio queda configurado.
+- **Equipo**: el dueño invita usuarios por enlace (rol recepción o administrador). Una persona puede pertenecer a varios negocios y cambiar entre ellos en *Ajustes*.
+- **Aislamiento**: todas las consultas del panel filtran por el negocio de la sesión (`org_id`).
+- **Administración de Stackline** en `/admin` (solo correos de `SUPERADMIN_EMAILS`): lista de negocios, uso, plan, extender prueba y suspender.
+
+Pendiente para cobrar: conectar la suscripción mensual (por ejemplo, suscripciones de Mercado Pago), correos transaccionales (bienvenida, recuperar contraseña) y límites por plan.
+
+### Camino a Supabase
+
+Hoy la base puede ser cualquier Postgres, incluido el de Supabase (`DATABASE_URL`). El siguiente paso sería usar Supabase Auth para el login (recuperar contraseña, entrar con Google, confirmar correo) y políticas RLS por `org_id` como segunda capa de seguridad. El modelo de datos ya está preparado para eso: cada tabla de negocio tiene `org_id` y los permisos salen de `memberships`.
+
 ## Estructura
 
 ```
