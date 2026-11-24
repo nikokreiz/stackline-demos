@@ -156,18 +156,21 @@ export function Label({ htmlFor, children }: { htmlFor?: string; children: React
 }
 
 const fieldCls =
-  "w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm text-ink placeholder:text-ink-faint focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20";
+  "rounded-lg border border-line bg-surface px-3 py-2 text-sm text-ink placeholder:text-ink-faint focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20";
+
+/** Ancho completo salvo que el llamador indique otro ancho (w-auto, w-40…). */
+const width = (className?: string) => (className && /(^|\s)w-/.test(className) ? "" : "w-full");
 
 export function Input({ className, ...rest }: ComponentProps<"input">) {
-  return <input className={cn(fieldCls, "h-10", className)} {...rest} />;
+  return <input className={cn(fieldCls, width(className), "h-10", className)} {...rest} />;
 }
 
 export function Select({ className, ...rest }: ComponentProps<"select">) {
-  return <select className={cn(fieldCls, "h-10", className)} {...rest} />;
+  return <select className={cn(fieldCls, width(className), "h-10", className)} {...rest} />;
 }
 
 export function Textarea({ className, ...rest }: ComponentProps<"textarea">) {
-  return <textarea className={cn(fieldCls, className)} {...rest} />;
+  return <textarea className={cn(fieldCls, width(className), className)} {...rest} />;
 }
 
 export function Field({ label, htmlFor, hint, children }: { label: string; htmlFor?: string; hint?: string; children: ReactNode }) {

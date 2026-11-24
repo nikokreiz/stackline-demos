@@ -2,7 +2,10 @@ const clpFmt = new Intl.NumberFormat("es-CL", { style: "currency", currency: "CL
 const numFmt = new Intl.NumberFormat("es-CL", { maximumFractionDigits: 0 });
 const pctFmt = new Intl.NumberFormat("es-CL", { style: "percent", maximumFractionDigits: 1 });
 
-export const clp = (n: number | string | null | undefined) => clpFmt.format(Math.round(Number(n ?? 0)));
+export const clp = (n: number | string | null | undefined) => {
+  const v = Math.round(Number(n ?? 0));
+  return v < 0 ? `-${clpFmt.format(-v)}` : clpFmt.format(v);
+};
 export const num = (n: number | string | null | undefined) => numFmt.format(Number(n ?? 0));
 export const pct = (ratio: number) => pctFmt.format(Number.isFinite(ratio) ? ratio : 0);
 
