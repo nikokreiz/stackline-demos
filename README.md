@@ -7,6 +7,27 @@ Proyectos de demostración de [Stackline](https://stacklines.vercel.app/) pensad
 | [`apps/agenda`](apps/agenda) · **Reservo** | Barberías, centros de estética, kine, consultas | Reserva online con abono, recordatorios por WhatsApp, gestión de la cita por el cliente, agenda por profesional y reportes de inasistencia |
 | [`apps/inventario`](apps/inventario) · **Margen** | Pymes que venden en local, Instagram y Mercado Libre | Stock por bodega, costo promedio ponderado, comisiones por canal, gastos y ganancia real del mes |
 
+## Cómo se ve
+
+> Guía para presentarlas a un cliente: [docs/guia-demo.md](docs/guia-demo.md)
+
+### Reservo (agenda online)
+
+| Reserva desde el celular | Gestión de la cita |
+|---|---|
+| <img src="docs/capturas/agenda-reserva-movil.png" width="300" alt="Reserva desde el celular"> | <img src="docs/capturas/agenda-cita-movil.png" width="300" alt="El cliente revisa, cambia o cancela su cita"> |
+
+![Página de inicio de Reservo](docs/capturas/agenda-landing.png)
+![Panel: citas de hoy](docs/capturas/agenda-panel-hoy.png)
+![Panel: agenda semanal por profesional](docs/capturas/agenda-panel-agenda.png)
+![Panel: reportes de ingresos e inasistencias](docs/capturas/agenda-panel-reportes.png)
+
+### Margen (inventario multicanal)
+
+![Resumen del mes con la ganancia real](docs/capturas/inventario-resumen.png)
+![Registrar una venta con comisión del canal](docs/capturas/inventario-nueva-venta.png)
+![Kardex de un producto con costo promedio](docs/capturas/inventario-kardex.png)
+
 ## Probar en local
 
 Requisitos: Node 20 o superior y pnpm 10.
