@@ -6,14 +6,20 @@ import { index, jsonb, pgTable, text, timestamp, uniqueIndex, uuid } from "drizz
  */
 
 export type OrgSettings = {
+  description?: string;
   address?: string;
   phone?: string;
   whatsapp?: string;
   instagram?: string;
   brandColor?: string;
   cancellationHours?: number;
+  /** Fecha ISO en que el dueño cerró la guía de primeros pasos. */
+  onboardedAt?: string;
   [key: string]: unknown;
 };
+
+export const PLANS = ["demo", "trial", "basico", "pro"] as const;
+export type Plan = (typeof PLANS)[number];
 
 export const organizations = pgTable("organizations", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -21,6 +27,11 @@ export const organizations = pgTable("organizations", {
   name: text("name").notNull(),
   timezone: text("timezone").notNull().default("America/Santiago"),
   settings: jsonb("settings").$type<OrgSettings>().notNull().default({}),
+  /** Rubro elegido al registrarse (barbería, estética…). */
+  industry: text("industry"),
+  plan: text("plan").$type<Plan>().notNull().default("trial"),
+  trialEndsAt: timestamp("trial_ends_at", { withTimezone: true }),
+  status: text("status").$type<"active" | "suspended">().notNull().default("active"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
@@ -78,4 +89,24 @@ export const auditLog = pgTable(
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [index("audit_log_org_created").on(t.orgId, t.createdAt)],
+);
+
+/** Invitación para sumar a alguien al equipo de un negocio. Se comparte como enlace. */
+export const invitations = pgTable(
+  "invitations",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    orgId: uuid("org_id")
+      .notNull()
+      .references(() => organizations.id, { onDelete: "cascade" }),
+    email: text("email").notNull(),
+    role: text("role").$type<Role>().notNull().default("staff"),
+    /** sha256 del token del enlace. */
+    tokenHash: text("token_hash").notNull().unique(),
+    invitedBy: uuid("invited_by").references(() => users.id, { onDelete: "set null" }),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    acceptedAt: timestamp("accepted_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("invitations_org").on(t.orgId)],
 );

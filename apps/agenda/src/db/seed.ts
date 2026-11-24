@@ -58,12 +58,16 @@ async function seedDemo(db: Db) {
       slug: DEMO_SLUG,
       name: "Barbería El Roble",
       timezone: TZ,
+      industry: "barberia",
+      plan: "demo",
       settings: {
         address: "Av. Italia 1450, Providencia, Santiago",
         phone: "+56 9 5555 1234",
         whatsapp: "+56955551234",
         instagram: "@barberiaelroble",
         cancellationHours: 4,
+        description: "Barbería de barrio en Providencia. Cortes clásicos y modernos, barba con toalla caliente.",
+        onboardedAt: new Date().toISOString(),
       },
     })
     .returning();
@@ -149,7 +153,7 @@ async function seedDemo(db: Db) {
   for (let offset = -35; offset <= 10; offset++) {
     const day = addDaysStr(today, offset);
     const wd = weekdayOf(day);
-    const fill = offset < 0 ? 0.72 : Math.max(0.12, 0.7 - offset * 0.06);
+    const fill = offset < 0 ? 0.72 : Math.max(0.12, 0.55 - offset * 0.06);
     const usedToday = new Set<string>();
     const pickCustomer = () => {
       for (let i = 0; i < 20; i++) {

@@ -81,6 +81,7 @@ async function seedDemo(db: Db) {
       slug: DEMO_SLUG,
       name: "Casa Nativa",
       timezone: TZ,
+      plan: "demo",
       settings: { address: "Barrio Italia, Providencia", instagram: "@casanativa.deco" },
     })
     .returning();
