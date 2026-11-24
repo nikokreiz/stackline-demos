@@ -1,0 +1,14 @@
+{
+  "name": "stackline-demos",
+  "private": true,
+  "packageManager": "pnpm@10.28.0",
+  "scripts": {
+    "dev:agenda": "pnpm --filter agenda dev",
+    "dev:inventario": "pnpm --filter inventario dev",
+    "build": "pnpm -r build",
+    "typecheck": "pnpm -r typecheck"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

@@ -1,0 +1,45 @@
+/*
+ * Tokens de diseño comunes. Cada app importa este archivo y define su
+ * color de marca (--brand, --brand-strong, --brand-soft) en su globals.css.
+ */
+
+:root {
+  --canvas: #f7f7f5;
+  --surface: #ffffff;
+  --subtle: #f1f1ee;
+  --line: #e6e5e1;
+  --ink: #1c1b19;
+  --ink-soft: #6b6862;
+  --ink-faint: #a19e97;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --canvas: #121211;
+    --surface: #1b1b1a;
+    --subtle: #252523;
+    --line: #2f2f2c;
+    --ink: #f2f1ee;
+    --ink-soft: #a7a49d;
+    --ink-faint: #6f6c66;
+  }
+}
+
+@theme inline {
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-subtle: var(--subtle);
+  --color-line: var(--line);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-ink-faint: var(--ink-faint);
+  --color-brand: var(--brand);
+  --color-brand-strong: var(--brand-strong);
+  --color-brand-soft: var(--brand-soft);
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+body {
+  background: var(--canvas);
+  color: var(--ink);
+}

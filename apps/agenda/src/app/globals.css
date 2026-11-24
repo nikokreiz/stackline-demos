@@ -1,0 +1,17 @@
+@import "tailwindcss";
+@import "../../../../packages/core/src/styles/theme.css";
+@source "../../../../packages/core/src";
+
+:root {
+  --brand: #0f766e;
+  --brand-strong: #115e59;
+  --brand-soft: #ccfbf1;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --brand: #14b8a6;
+    --brand-strong: #5eead4;
+    --brand-soft: #134e4a;
+  }
+}

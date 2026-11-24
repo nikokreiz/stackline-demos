@@ -1,0 +1,37 @@
+{
+  "name": "@stackline/core",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./db": "./src/db/index.ts",
+    "./schema": "./src/db/schema-core.ts",
+    "./auth": "./src/auth/index.ts",
+    "./audit": "./src/audit.ts",
+    "./format": "./src/format.ts",
+    "./time": "./src/time.ts",
+    "./ui": "./src/ui/index.tsx",
+    "./ui/shell": "./src/ui/shell.tsx"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@date-fns/tz": "1.5.0",
+    "@electric-sql/pglite": "0.6.0",
+    "drizzle-orm": "0.45.4",
+    "postgres": "3.4.9",
+    "lucide-react": "1.78.0"
+  },
+  "peerDependencies": {
+    "next": "16.4.6",
+    "react": "19.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "26.6.6",
+    "@types/react": "19.3.0",
+    "next": "16.4.6",
+    "react": "19.3.1",
+    "typescript": "5.9.3"
+  }
+}
