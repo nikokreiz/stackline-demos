@@ -78,9 +78,9 @@ Cada app se despliega como un proyecto de Vercel aparte, con **Root Directory** 
 
 1. Crea una base Postgres (Supabase o Neon) por app y copia la URL de conexión.
 2. En Vercel, define las variables de entorno de `.env.example` de la app. Como mínimo `DATABASE_URL`, `CRON_SECRET` y, para la demo pública, `DEMO_MODE=true`.
-3. Las migraciones se aplican solas en el primer request. `vercel.json` programa los cron: recordatorios cada hora (agenda) y reinicio diario de los datos de demostración.
+3. Las migraciones se aplican solas en el primer request. `vercel.json` programa los cron de la agenda: recordatorios una vez al día (9:00 de Chile, cubre las citas de las 26 horas siguientes) y reinicio diario de los datos de demostración.
 
-> Los cron por hora requieren el plan Pro de Vercel. En el plan Hobby, cambia el de recordatorios a una vez al día: igual cubre las citas del día siguiente.
+> Se dejaron diarios porque el plan Hobby de Vercel no permite cron más frecuentes. Con el plan Pro se puede cambiar el de recordatorios a cada hora (`0 * * * *`) para avisar más cerca de la cita.
 
 ### Integraciones de la agenda
 
